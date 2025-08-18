@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDEE Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://www.cru.ac.th/images/crulogo.png">
+</head>
+<body>
+    <!-- header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="https://www.cru.ac.th/images/crulogo.png" alt="CRU Logo" style="width: 50px; height: 50px; object-fit: contain;">
+                </div>
+                <div class="logo-text">
+                    <h1>TDEE Calculator</h1>
+                    <p>Health & Fitness Tool</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- หน้าหลัก -->
+    <div class="container">
+        <!-- คำนำ -->
+        <div class="hero-section">
+            <h1 class="hero-title">คำนวณการเผาผลาญแคลอรี่รายวัน</h1>
+            <p class="hero-subtitle">ค้นหาปริมาณแคลอรี่ที่ร่างกายคุณเผาผลาญต่อวันด้วยเครื่องมือที่แม่นยำและใช้งานง่าย พร้อมข้อมูล BMI, BMR และค่าโภชนาการที่จำเป็น</p>
+        </div>
+        <!-- ที่กรอกข้อมูลสำหรับนำไปคำนวณ -->
+        <div class="calculator-card">
+            <form id="tdeeForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="age">อายุ (ปี)</label>
+                        <input type="number" id="age" min="1" max="120" required>
+                        <i class="fas fa-birthday-cake icon"></i>
+                    </div>
+
+                    <div class="form-group">
+                        <label>เพศ</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="gender" value="male" required>
+                                <i class="fas fa-mars"></i>
+                                ชาย
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="gender" value="female" required>
+                                <i class="fas fa-venus"></i>
+                                หญิง
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="height">ส่วนสูง (ซม.)</label>
+                        <input type="number" id="height" min="100" max="250" step="0.1" required>
+                        <i class="fas fa-ruler-vertical icon"></i>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weight">น้ำหนัก (กก.)</label>
+                        <input type="number" id="weight" min="30" max="300" step="0.1" required>
+                        <i class="fas fa-weight icon"></i>
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>เป้าหมาย</label>
+                        <div class="radio-group">
+                            <label class="radio-option goal-option" data-goal="cutting">
+                                <input type="radio" name="goal" value="cutting" required>
+                                <i class="fas fa-weight-hanging"></i>
+                                ลดน้ำหนัก (Cutting)
+                            </label>
+                            <label class="radio-option goal-option" data-goal="maintain">
+                                <input type="radio" name="goal" value="maintain" required>
+                                <i class="fas fa-balance-scale"></i>
+                                รักษาน้ำหนัก (Maintain)
+                            </label>
+                            <label class="radio-option goal-option" data-goal="bulking">
+                                <input type="radio" name="goal" value="bulking" required>
+                                <i class="fas fa-dumbbell"></i>
+                                เพิ่มน้ำหนัก (Bulking)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="activity">ระดับการออกกำลังกาย</label>
+                        <select id="activity" required>
+                            <option value="">เลือกระดับการออกกำลังกาย</option>
+                            <option value="1.2">นั่งทำงาน ไม่ออกกำลังกาย (Sedentary)</option>
+                            <option value="1.375">ออกกำลังกายเบาๆ 1-3 วัน/สัปดาห์ (Lightly Active)</option>
+                            <option value="1.55">ออกกำลังกายปานกลาง 3-5 วัน/สัปดาห์ (Moderately Active)</option>
+                            <option value="1.725">ออกกำลังกายหนัก 6-7 วัน/สัปดาห์ (Very Active)</option>
+                            <option value="1.9">ออกกำลังกายหนักมาก หรือมีงานหนัก (Extremely Active)</option>
+                        </select>
+                        <i class="fas fa-running icon"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="calculate-btn">
+                    <i class="fas fa-calculator"></i>
+                    คำนวณเลย
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>กำลังคำนวณ...</p>
+            </div>
+
+            <div class="results-section" id="results">
+                <div class="macro-selector-section" id="macroSelector">
+                    <h3><i class="fas fa-chart-pie"></i> เลือกสูตรโภชนาการ</h3>
+                    <div class="macro-buttons">
+                        <button class="macro-btn active" data-macro="moderate">
+                            <i class="fas fa-balance-scale"></i>
+                            <div class="macro-title">Moderate Carb</div>
+                            <div class="macro-ratio">30/35/35</div>
+                            <div class="macro-desc">โปรตีน/ไขมัน/คาร์บ</div>
+                        </button>
+                        <button class="macro-btn" data-macro="lowcarb">
+                            <i class="fas fa-drumstick-bite"></i>
+                            <div class="macro-title">Lower Carb</div>
+                            <div class="macro-ratio">40/40/20</div>
+                            <div class="macro-desc">โปรตีน/ไขมัน/คาร์บ</div>
+                        </button>
+                        <button class="macro-btn" data-macro="highcarb">
+                            <i class="fas fa-bread-slice"></i>
+                            <div class="macro-title">Higher Carb</div>
+                            <div class="macro-ratio">30/20/50</div>
+                            <div class="macro-desc">โปรตีน/ไขมัน/คาร์บ</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3><i class="fas fa-fire"></i> BMR</h3>
+                        <div class="value" id="bmrValue">0</div>
+                        <div class="unit">แคลอรี่/วัน</div>
+                    </div>
+                    <div class="result-card">
+                        <h3><i class="fas fa-bolt"></i> TDEE (รักษา)</h3>
+                        <div class="value" id="tdeeValue">0</div>
+                        <div class="unit">แคลอรี่/วัน</div>
+                    </div>
+                    <div class="result-card">
+                        <h3><i class="fas fa-chart-line"></i> BMI</h3>
+                        <div class="value" id="bmiValue">0</div>
+                        <div class="unit" id="bmiStatus">สถานะ</div>
+                    </div>
+                    <div class="result-card goal-result">
+                        <h3><i class="fas fa-target" id="goalIcon"></i> TDEE (<span id="goalTitle">เป้าหมาย</span>)</h3>
+                        <div class="value" id="goalValue">0</div>
+                        <div class="unit">แคลอรี่/วัน</div>
+                    </div>
+                    <div class="result-card">
+                        <h3><i class="fas fa-bread-slice"></i> คาร์โบไฮเดรต</h3>
+                        <div class="value" id="carbsValue">0</div>
+                        <div class="unit">กรัม/วัน</div>
+                    </div>
+                    <div class="result-card">
+                        <h3><i class="fas fa-drumstick-bite"></i> โปรตีน</h3>
+                        <div class="value" id="proteinValue">0</div>
+                        <div class="unit">กรัม/วัน</div>
+                    </div>
+                    <div class="result-card">
+                        <h3><i class="fas fa-tint"></i> ไขมัน</h3>
+                        <div class="value" id="fatValue">0</div>
+                        <div class="unit">กรัม/วัน</div>
+                    </div>
+                    <div class="result-card">
+                        <h3><i class="fas fa-glass-water"></i> น้ำ</h3>
+                        <div class="value" id="waterValue">0</div>
+                        <div class="unit">ลิตร/วัน</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-info-circle"></i> เกี่ยวกับเรา</h3>
+                <p>เครื่องมือคำนวณ TDEE ที่แม่นยำและใช้งานง่าย ช่วยให้คุณวางแผนการกินและการออกกำลังกายได้อย่างมีประสิทธิภาพ</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/cruphoto" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/fakbokkk_cru/" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99%E0%B8%8A%E0%B8%A5%E0%B8%A3%E0%B8%B2%E0%B8%A9%E0%B8%8E%E0%B8%A3%E0%B8%AD%E0%B9%8D%E0%B8%B2%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B8%88%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%8A%E0%B8%A5" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+            <h3><i class="fas fa-question-circle"></i> คำถามที่พบบ่อย</h3>
+            <ul>
+                <li><a href="https://www.petcharavejhospital.com/th/Article/BMR-calculator-loseweight" target="_blank" rel="noopener">TDEE คืออะไร?</a></li>
+                <li><a href="https://www.bangkokhospital.com/th/bangkok/content/secret-recipe-define-food-for-weight-loss" target="_blank" rel="noopener">วิธีใช้ผลลัพธ์ที่ได้</a></li>
+                <li><a href="https://pubmed.ncbi.nlm.nih.gov/38220405/" target="_blank" rel="noopener">การคำนวณแม่นยำแค่ไหน?</a></li>
+                <li><a href="https://nutrition2.anamai.moph.go.th/th/dri" target="_blank" rel="noopener">ควรกินแคลอรี่เท่าไหร่?</a></li>
+            </ul>
+            </div>
+
+            <div class="footer-section">
+            <h3><i class="fas fa-dumbbell"></i> เครื่องมือเพิ่มเติม</h3>
+            <ul>
+                <li><a href="https://nutrition2.anamai.moph.go.th/th/bmi" target="_blank" rel="noopener">คำนวณ BMI</a></li>
+                <li><a href="https://www.who.int/publications/i/item/9789240015128" target="_blank" rel="noopener">แผนการออกกำลังกาย</a></li>
+                <li><a href="https://hpc.go.th/diet/?module=flag" target="_blank" rel="noopener">โภชนาการประจำวัน</a></li>
+                <li><a href="https://www.cdc.gov/diabetes-prevention/media/pdfs/Handouts-Weight_Log.pdf" target="_blank" rel="noopener">ติดตามความคืบหน้า</a></li>
+            </ul>
+            </div>
+
+
+            <div class="footer-section">
+                <h3><i class="fas fa-envelope"></i> ติดต่อเรา</h3>
+                <p><i class="fas fa-phone"></i> โทร: 099-xxx-xxx</p>
+                <p><i class="fas fa-envelope"></i> อีเมล: info@tdee-calc.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> ชลบุรี ประเทศไทย</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 TDEE Calculator Premium. All rights reserved. | Made with <i class="fas fa-heart" style="color: var(--primary-orange);"></i> for better health</p>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
